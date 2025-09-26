@@ -5,21 +5,21 @@ export default function Blog() {
     {
       title: "How We Transform Suburban Living",
       excerpt: "Discover how Baraka Homes redefines real estate solutions in Nairobi’s suburbs with innovation and trust.",
-      img: "https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg",
+      img: "/images/house7.jpeg",
       date: "Sept 2025",
       slug: "transform-suburban-living"
     },
     {
       title: "Choosing the Right Home for Your Family",
       excerpt: "Expert tips on selecting the perfect house in Kilimani and nearby suburbs that matches your lifestyle.",
-      img: "https://images.pexels.com/photos/534171/pexels-photo-534171.jpeg",
+      img: "/images/house11.jpeg",
       date: "Aug 2025",
       slug: "choosing-right-home"
     },
     {
       title: "Affordable Housing Solutions in Nairobi",
       excerpt: "How Baraka Homes is making affordable suburban living a reality while ensuring durability and comfort.",
-      img: "https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg",
+      img: "/images/house12.jpeg",
       date: "July 2025",
       slug: "affordable-housing"
     }

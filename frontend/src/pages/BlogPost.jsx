@@ -12,7 +12,7 @@ const posts = [
 
       Through partnerships and innovations, we bring quality homes closer to families who need them most.
     `,
-    img: "https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg",
+    img: "/images/house7.jpeg",
     date: "Sept 2025",
     slug: "transform-suburban-living"
   },
@@ -26,7 +26,7 @@ const posts = [
 
       Our agents guide you every step of the way to ensure you make the best choice for your family.
     `,
-    img: "https://images.pexels.com/photos/534171/pexels-photo-534171.jpeg",
+    img: "/images/house11.jpeg",
     date: "Aug 2025",
     slug: "choosing-right-home"
   },
@@ -39,7 +39,7 @@ const posts = [
 
       Together, we are building not just houses, but futures.
     `,
-    img: "https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg",
+    img: "/images/house12.jpeg",
     date: "July 2025",
     slug: "affordable-housing"
   }

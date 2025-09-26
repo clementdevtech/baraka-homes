@@ -15,7 +15,7 @@ export default function ProductCard({ id, name, deposit, desc, image, onQuickVie
         <h5 className="card-title">{name}</h5>
         <p className="card-text text-muted">{desc}</p>
         <div className="mt-auto d-flex justify-content-between align-items-center">
-          <span className="fw-bold text-primary">Deposit: KSh {deposit}</span>
+          <span className="fw-bold text-primary">Deposit: {deposit}%</span>
           <div className="d-flex gap-2">
             <button
               className="btn btn-sm btn-outline-secondary"
