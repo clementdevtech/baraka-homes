@@ -3,12 +3,12 @@ import { Modal } from "react-bootstrap";
 
 export default function Gallery() {
   const images = [
-    { src: "/images/image (1).jpeg", caption: "Residential Project – Kilimani" },
-    { src: "/images/image (5).jpeg", caption: "Affordable Housing – Kayole" },
-    { src: "/images/image (7).jpeg", caption: "Modern Home – Runda" },
-    { src: "/images/image (2).jpeg", caption: "Roof Installation – South B" },
-    { src: "/images/image (9).jpeg", caption: "Estate Development – Kitengela" },
-    { src: "/images/image (10).jpeg", caption: "Commercial Project – Westlands" }
+    { src: "/images/house1.jpeg", caption: "Residential Project – Kilimani" },
+    { src: "/images/house2.jpeg", caption: "Affordable Housing – Kayole" },
+    { src: "/images/house3.jpeg", caption: "Modern Home – Runda" },
+    { src: "/images/house4.jpeg", caption: "Roof Installation – South B" },
+    { src: "/images/house10.jpeg", caption: "Estate Development – Kitengela" },
+    { src: "/images/house11.jpeg", caption: "Commercial Project – Westlands" }
   ];
 
   const [selected, setSelected] = useState(null);

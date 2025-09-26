@@ -159,7 +159,7 @@ export default function Home() {
           </div>
         </div>
         <div className="text-center mt-4">
-          <Link to="/properties" className="btn btn-outline-success btn-lg">See All Listings</Link>
+          <Link to="/gallery" className="btn btn-outline-success btn-lg">See All Listings</Link>
         </div>
       </section>
 
