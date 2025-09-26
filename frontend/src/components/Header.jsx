@@ -12,7 +12,7 @@ export default function Header() {
       {/* ✅ Navbar */}
       <nav className="navbar navbar-dark bg-dark">
         <div className="container d-flex justify-content-between align-items-center">
-          <Link className="navbar-brand fw-bold" to="/">Mabati Rolling miles</Link>
+          <Link className="navbar-brand fw-bold" to="/">Baraka Homes</Link>
 
           {/* ✅ Mobile Toggle Button */}
           <button
