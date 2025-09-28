@@ -16,7 +16,7 @@ export default function Services() {
           <div className="col-md-4">
             <div className="card h-100 shadow-sm">
               <img
-                src="/images/house1.jpg"
+                src="/images/house1.jpeg"
                 className="card-img-top"
                 alt="Property Sales"
               />
@@ -34,7 +34,7 @@ export default function Services() {
           <div className="col-md-4">
             <div className="card h-100 shadow-sm">
               <img
-                src="/images/house2.jpg"
+                src="/images/house2.jpeg"
                 className="card-img-top"
                 alt="Property Rentals"
               />
@@ -52,7 +52,7 @@ export default function Services() {
           <div className="col-md-4">
             <div className="card h-100 shadow-sm">
               <img
-                src="/images/house3.jpg"
+                src="/images/house3.jpeg"
                 className="card-img-top"
                 alt="Property Management"
               />
