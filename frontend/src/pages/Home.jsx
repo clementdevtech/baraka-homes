@@ -83,7 +83,7 @@ export default function Home() {
               Step inside your dream home without leaving your seat. Rotate, zoom,
               and experience every corner with our interactive house tours.
             </p>
-            <Link to="/properties" className="btn btn-success mt-3">Browse Listings</Link>
+            <Link to="/gallery" className="btn btn-success mt-3">Browse Listings</Link>
           </div>
           <div className="col-md-6 text-center">
             <div className="border rounded shadow p-3 bg-light">
