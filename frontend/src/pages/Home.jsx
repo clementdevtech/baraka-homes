@@ -68,7 +68,7 @@ export default function Home() {
           <p className="lead mb-4">
             Your trusted partner in buying and selling homes with over 10 years in our journey.
           </p>
-          <Link to="/properties" className="btn btn-light btn-lg px-4">
+          <Link to="/products" className="btn btn-light btn-lg px-4">
             View Properties
           </Link>
         </div>
