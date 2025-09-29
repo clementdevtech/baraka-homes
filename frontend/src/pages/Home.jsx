@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom"
 import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
 import ProductViewer360 from "../components/ProductViewer360"
-import WhatsAppButton from "../components/WhatsAppButton";
+import WhatsAppButton from "../components/WhatsAppButton"
 
 const sampleImages = [
   "/images/house1.jpeg",
@@ -10,14 +11,20 @@ const sampleImages = [
   "/images/house4.jpeg"
 ]
 
+// 👇 Directions for alternating animations
+const directions = [
+  { y: 40, opacity: 0 }, // fade in from bottom
+  { x: -40, opacity: 0 }, // fade in from left
+  { x: 40, opacity: 0 }, // fade in from right
+  { y: -40, opacity: 0 } // fade in from top
+]
+
 export default function Home() {
-  // ✅ Reviews state
   const [reviews, setReviews] = useState([])
   const [name, setName] = useState("")
   const [message, setMessage] = useState("")
   const [rating, setRating] = useState(0)
 
-  // ✅ Load saved reviews from localStorage
   useEffect(() => {
     const saved = localStorage.getItem("reviews")
     if (saved) {
@@ -25,23 +32,20 @@ export default function Home() {
     }
   }, [])
 
-  // ✅ Save to localStorage whenever reviews change
   useEffect(() => {
     localStorage.setItem("reviews", JSON.stringify(reviews))
   }, [reviews])
 
-  // ✅ Add new review
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!name.trim() || !message.trim() || rating === 0) return
     const newReview = { name, message, rating }
-    setReviews([newReview, ...reviews]) // newest first
+    setReviews([newReview, ...reviews])
     setName("")
     setMessage("")
     setRating(0)
   }
 
-  // ✅ Render stars helper
   const renderStars = (count, onClick) => {
     return [...Array(5)].map((_, i) => (
       <span
@@ -60,133 +64,211 @@ export default function Home() {
   }
 
   return (
-    <div>
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ staggerChildren: 0.3 }}
+    >
       {/* ✅ Hero */}
-      <section className="bg-success text-white text-center py-5">
+      <motion.section
+        initial={{ y: -60, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6 }}
+        className="bg-success text-white text-center py-5"
+      >
         <div className="container">
           <h1 className="display-3 fw-bold">Welcome to BarakaHomes</h1>
           <p className="lead mb-4">
-            Your trusted partner in buying and selling homes with over 10 years in our journey.
+            Your trusted partner in buying and selling homes with over 10 years
+            in our journey.
           </p>
           <Link to="/products" className="btn btn-light btn-lg px-4">
             View Properties
           </Link>
         </div>
-      </section>
+      </motion.section>
 
       {/* ✅ 360° Viewer Section */}
-      <section className="container py-5">
+      <motion.section
+        initial={directions[0]}
+        whileInView={{ x: 0, y: 0, opacity: 1 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6 }}
+        className="container py-5"
+      >
         <div className="row align-items-center">
-          <div className="col-md-6 mb-4 mb-md-0">
+          <motion.div
+            initial={directions[1]}
+            whileInView={{ x: 0, opacity: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.6 }}
+            className="col-md-6 mb-4 mb-md-0"
+          >
             <h2 className="fw-bold">Explore Homes</h2>
             <p className="text-muted">
-              Step inside your dream home without leaving your seat. Rotate, zoom,
-              and experience every corner with our interactive house tours.
+              Step inside your dream home without leaving your seat. Rotate,
+              zoom, and experience every corner with our interactive house
+              tours.
             </p>
-            <Link to="/gallery" className="btn btn-success mt-3">Browse Listings</Link>
-          </div>
-          <div className="col-md-6 text-center">
+            <Link to="/gallery" className="btn btn-success mt-3">
+              Browse Listings
+            </Link>
+          </motion.div>
+          <motion.div
+            initial={directions[2]}
+            whileInView={{ x: 0, opacity: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.6 }}
+            className="col-md-6 text-center"
+          >
             <div className="border rounded shadow p-3 bg-light">
               <ProductViewer360 images={sampleImages} />
             </div>
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ✅ Why Choose Us */}
-      <section className="bg-light py-5">
+      <motion.section
+        initial={directions[3]}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6 }}
+        className="bg-light py-5"
+      >
         <div className="container text-center">
           <h2 className="fw-bold mb-4">Why Choose BarakaHomes?</h2>
           <div className="row g-4">
-            <div className="col-md-4">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body">
-                  <h5 className="fw-bold">Immersive Tours</h5>
-                  <p className="text-muted">Walk through properties virtually before scheduling a visit.</p>
+            {[
+              {
+                title: "Immersive Tours",
+                text: "Walk through properties virtually before scheduling a visit."
+              },
+              {
+                title: "Trusted Agents",
+                text: "Our experienced team ensures a smooth buying or selling process."
+              },
+              {
+                title: "Property Transformations",
+                text: "Visualize home upgrades and renovations with advanced 3D tools."
+              }
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={directions[idx % directions.length]}
+                whileInView={{ x: 0, y: 0, opacity: 1 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.5, delay: idx * 0.2 }}
+                className="col-md-4"
+              >
+                <div className="card h-100 shadow-sm">
+                  <div className="card-body">
+                    <h5 className="fw-bold">{item.title}</h5>
+                    <p className="text-muted">{item.text}</p>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body">
-                  <h5 className="fw-bold">Trusted Agents</h5>
-                  <p className="text-muted">Our experienced team ensures a smooth buying or selling process.</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body">
-                  <h5 className="fw-bold">Property Transformations</h5>
-                  <p className="text-muted">Visualize home upgrades and renovations with advanced 3D tools.</p>
-                </div>
-              </div>
-            </div>
+              </motion.div>
+            ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ✅ Featured Properties */}
-      <section className="container py-5">
+      <motion.section
+        initial={directions[0]}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6 }}
+        className="container py-5"
+      >
         <h2 className="fw-bold mb-4 text-center">Featured Homes</h2>
         <div className="row g-4">
-          <div className="col-md-4">
-            <div className="card shadow-sm h-100">
-              <img src="/images/house1.jpeg" className="card-img-top" alt="Luxury Villa" />
-              <div className="card-body">
-                <h5 className="card-title">Luxury Villa</h5>
-                <p className="text-success fw-bold">✨ Contact us for exclusive details</p>
+          {[
+            {
+              img: "/images/house1.jpeg",
+              title: "Luxury Villa",
+              text: "✨ Contact us for exclusive details"
+            },
+            {
+              img: "/images/house2.jpeg",
+              title: "Modern Apartment",
+              text: "🏡 Unlock the hidden offer"
+            },
+            {
+              img: "/images/house3.jpeg",
+              title: "Stylish Townhouse",
+              text: "📞 Call us today to discover more"
+            }
+          ].map((home, idx) => (
+            <motion.div
+              key={idx}
+              initial={directions[idx % directions.length]}
+              whileInView={{ x: 0, y: 0, opacity: 1 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, delay: idx * 0.2 }}
+              className="col-md-4"
+            >
+              <div className="card shadow-sm h-100">
+                <img src={home.img} className="card-img-top" alt={home.title} />
+                <div className="card-body">
+                  <h5 className="card-title">{home.title}</h5>
+                  <p className="text-success fw-bold">{home.text}</p>
+                </div>
               </div>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="card shadow-sm h-100">
-              <img src="/images/house2.jpeg" className="card-img-top" alt="Modern Apartment" />
-              <div className="card-body">
-                <h5 className="card-title">Modern Apartment</h5>
-                <p className="text-success fw-bold">🏡 Unlock the hidden offer</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="card shadow-sm h-100">
-              <img src="/images/house3.jpeg" className="card-img-top" alt="Townhouse" />
-              <div className="card-body">
-                <h5 className="card-title">Stylish Townhouse</h5>
-                <p className="text-success fw-bold">📞 Call us today to discover more</p>
-              </div>
-            </div>
-          </div>
+            </motion.div>
+          ))}
         </div>
         <div className="text-center mt-4">
-          <Link to="/gallery" className="btn btn-outline-success btn-lg">See All Listings</Link>
+          <Link to="/gallery" className="btn btn-outline-success btn-lg">
+            See All Listings
+          </Link>
         </div>
-      </section>
+      </motion.section>
 
       {/* ✅ Reviews Section */}
-      <section className="bg-light py-5">
+      <motion.section
+        initial={directions[2]}
+        whileInView={{ x: 0, opacity: 1 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6 }}
+        className="bg-light py-5"
+      >
         <div className="container">
           <h2 className="fw-bold mb-4 text-center">Client Reviews</h2>
-
-          {/* Reviews List */}
           <div className="row g-4 mb-4">
             {reviews.length === 0 ? (
-              <p className="text-center text-muted">No reviews yet. Be the first to share your experience!</p>
+              <p className="text-center text-muted">
+                No reviews yet. Be the first to share your experience!
+              </p>
             ) : (
               reviews.map((r, i) => (
-                <div className="col-md-4" key={i}>
+                <motion.div
+                  key={i}
+                  initial={directions[i % directions.length]}
+                  whileInView={{ x: 0, y: 0, opacity: 1 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className="col-md-4"
+                >
                   <div className="p-4 border rounded shadow-sm bg-white h-100">
                     <div className="mb-2">{renderStars(r.rating)}</div>
                     <p>"{r.message}"</p>
                     <h6 className="fw-bold">— {r.name}</h6>
                   </div>
-                </div>
+                </motion.div>
               ))
             )}
           </div>
 
-          {/* Review Form */}
-          <div className="card shadow-sm">
+          <motion.div
+            initial={directions[1]}
+            whileInView={{ x: 0, opacity: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.6 }}
+            className="card shadow-sm"
+          >
             <div className="card-body">
               <h5 className="fw-bold mb-3">Leave a Review</h5>
               <form onSubmit={handleSubmit}>
@@ -214,24 +296,44 @@ export default function Home() {
                     required
                   ></textarea>
                 </div>
-                <button type="submit" className="btn btn-success">Submit Review</button>
+                <button type="submit" className="btn btn-success">
+                  Submit Review
+                </button>
               </form>
             </div>
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ✅ Call to Action */}
-      <section className="text-center bg-success text-white py-5">
+      <motion.section
+        initial={directions[0]}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6 }}
+        className="text-center bg-success text-white py-5"
+      >
         <div className="container">
           <h2 className="fw-bold">Ready to Find Your Dream Home?</h2>
           <p className="lead">Browse listings or talk to our experts today.</p>
-          <Link to="/properties" className="btn btn-light btn-lg">Explore Homes</Link>
+          <Link to="/properties" className="btn btn-light btn-lg">
+            Explore Homes
+          </Link>
         </div>
-      </section>
+      </motion.section>
 
       {/* ✅ Floating WhatsApp CTA */}
-      <WhatsAppButton phone="254718210424" message="Hello BarakaHomes, I’m interested in your properties!" />
-    </div>
+      <motion.div
+        initial={directions[3]}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6 }}
+      >
+        <WhatsAppButton
+          phone="254718210424"
+          message="Hello BarakaHomes, I’m interested in your properties!"
+        />
+      </motion.div>
+    </motion.div>
   )
 }

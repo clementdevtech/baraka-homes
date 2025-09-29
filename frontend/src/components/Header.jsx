@@ -89,7 +89,7 @@ export default function Header() {
       </div>
 
       {/* ✅ Styles */}
-      <style jsx>{`
+      <style >{`
         .offcanvas-menu {
           position: fixed;
           top: 0;

@@ -1,37 +1,70 @@
 import { useState, useMemo } from "react";
+import { motion } from "framer-motion";
+import Slider from "rc-slider";
+import Tooltip from "rc-tooltip";
+import "rc-slider/assets/index.css";
+import "rc-tooltip/assets/bootstrap.css";
+
 import products from "../data/products";
 import ProductCard from "../components/ProductCard";
 import ProductModal from "../components/ProductModal";
 
+const toNumber = (v) => {
+if (v == null) return Infinity;
+if (typeof v === "number") return v;
+const cleaned = String(v).replace(/[^\d.-]/g, "");
+const n = Number(cleaned);
+return Number.isFinite(n) ? n : Infinity;
+};
+
+// Custom slider handle with tooltip
+const HandleWithTooltip = ({ value = 0, dragging, index, ...rest }) => {
+return (
+<Tooltip
+prefixCls="rc-tooltip"
+overlay={`KES ${Number(value).toLocaleString()}`}
+visible={dragging}
+placement="top"
+key={index}
+>
+<div
+{...rest}
+style={rest.style}
+className={rest.className}
+onMouseDown={rest.onMouseDown}
+onTouchStart={rest.onTouchStart}
+/> </Tooltip>
+);
+};
+
 export default function Products() {
+const MAX_LIMIT = 300_000_000; // 300 million
+const STEP = 100_000; // 100k step
+
 const [selected, setSelected] = useState(null);
 const [location, setLocation] = useState("All");
-const [minPrice, setMinPrice] = useState("");
-const [maxPrice, setMaxPrice] = useState("");
+const [maxPrice, setMaxPrice] = useState(MAX_LIMIT);
 
-// Extract unique locations from dataset
 const locations = useMemo(() => {
 const unique = new Set(products.map((p) => p.location));
 return ["All", ...unique];
 }, []);
 
-// Filter logic
 const filteredProducts = useMemo(() => {
+const max = Number(maxPrice);
 return products.filter((p) => {
 const inLocation = location === "All" || p.location === location;
-const inPrice =
-(!minPrice || (p.price && p.price >= parseInt(minPrice))) &&
-(!maxPrice || (p.price && p.price <= parseInt(maxPrice)));
-return inLocation && inPrice;
+const priceNum = toNumber(p.price);
+return inLocation && priceNum <= max;
 });
-}, [products, location, minPrice, maxPrice]);
+}, [location, maxPrice]);
 
 return ( <div className="container py-5"> <h2 className="mb-4">Our Projects</h2>
 
 
   {/* Filters */}
-  <div className="row mb-4 g-3">
-    <div className="col-md-4">
+  <div className="row mb-4 g-3 align-items-center">
+    <div className="col-md-6">
       <label className="form-label">Filter by Location</label>
       <select
         className="form-select"
@@ -46,36 +79,73 @@ return ( <div className="container py-5"> <h2 className="mb-4">Our Projects</h2>
       </select>
     </div>
 
-    <div className="col-md-4">
-      <label className="form-label">Min Price (KES)</label>
-      <input
-        type="number"
-        className="form-control"
-        value={minPrice}
-        onChange={(e) => setMinPrice(e.target.value)}
-        placeholder="e.g. 5000000"
-      />
-    </div>
-
-    <div className="col-md-4">
-      <label className="form-label">Max Price (KES)</label>
-      <input
-        type="number"
-        className="form-control"
+    <div className="col-md-6">
+      <label className="form-label d-flex justify-content-between">
+        <span>Max Price</span>
+        <small className="text-success fw-bold">
+          {maxPrice >= MAX_LIMIT
+            ? "Any"
+            : `KES ${maxPrice.toLocaleString()}`}
+        </small>
+      </label>
+      <Slider
+        min={0}
+        max={MAX_LIMIT}
+        step={STEP}
         value={maxPrice}
-        onChange={(e) => setMaxPrice(e.target.value)}
-        placeholder="e.g. 20000000"
+        handleRender={(nodeProps) => <HandleWithTooltip {...nodeProps} />}
+        onChange={(val) => setMaxPrice(val)}
       />
+
+      {/* Show Reset only if slider was moved */}
+      {maxPrice !== MAX_LIMIT && (
+        <button
+          type="button"
+          className="btn btn-sm btn-outline-secondary mt-2"
+          onClick={() => setMaxPrice(MAX_LIMIT)}
+        >
+          Reset
+        </button>
+      )}
     </div>
   </div>
 
   {/* Product Grid */}
   <div className="row g-4">
-    {filteredProducts.map((p, index) => (
-      <div className="col-md-4" key={`${p.id}-${index}`}>
-        <ProductCard product={p} onQuickView={setSelected} />
+    {filteredProducts.length === 0 ? (
+      <div className="col-12">
+        <p className="text-center text-muted">
+          No projects match your filters.
+        </p>
       </div>
-    ))}
+    ) : (
+      filteredProducts.map((p, index) => {
+        const directions = [
+          { x: -80, opacity: 0 }, // left
+          { x: 80, opacity: 0 },  // right
+          { y: 80, opacity: 0 },  // bottom
+          { y: -80, opacity: 0 }, // top
+        ];
+        const initial = directions[index % directions.length];
+        return (
+          <motion.div
+            className="col-md-4"
+            key={`${p.id}-${index}`}
+            initial={initial}
+            whileInView={{ x: 0, y: 0, opacity: 1 }}
+            transition={{
+              duration: 0.7,
+              delay: index * 0.1,
+              type: "spring",
+              stiffness: 70,
+            }}
+            viewport={{ once: true, amount: 0.25 }}
+          >
+            <ProductCard product={p} onQuickView={setSelected} />
+          </motion.div>
+        );
+      })
+    )}
   </div>
 
   {/* Modal */}
