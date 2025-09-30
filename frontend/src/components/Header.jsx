@@ -20,7 +20,7 @@ export default function Header() {
       return <li className="nav-item">Loading...</li>;
     }
 
-    if (!user || !user.username || !user.role) {
+    if (!user.role) {
       console.log("🔑 No user logged in — showing login link");
       return (
         <li className="nav-item">

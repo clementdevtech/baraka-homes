@@ -23,7 +23,7 @@ export const checkuser = async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.json({ user: { id: decoded.id, email: decoded.email } });
+    res.json({ user: { id: decoded.id, email: decoded.email, role: decoded.role } });
   } catch (err) {
     res.status(401).json({ message: "Invalid token" });
   }
