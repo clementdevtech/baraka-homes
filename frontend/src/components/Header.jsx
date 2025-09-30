@@ -1,20 +1,59 @@
-import { useState } from "react"
-import { Link } from "react-router-dom"
-import { useCart } from "../context/CartContext"
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";  // ✅ import auth context
 
 export default function Header() {
-  const { cart } = useCart()
-  const itemCount = cart.reduce((sum, item) => sum + item.qty, 0)
-  const [isOpen, setIsOpen] = useState(false)
+  const { cart } = useCart();
+  const { user, logout, loading } = useAuth();   // ✅ get auth data
+  const itemCount = cart.reduce((sum, item) => sum + item.qty, 0);
+  const [isOpen, setIsOpen] = useState(false);
+
+  // ✅ Debug user whenever it changes
+  useEffect(() => {
+    console.log("👤 Current Auth User:", user);
+  }, [user]);
+
+  // ✅ helper function for nav links
+  const renderAuthLinks = () => {
+    if (loading) {
+      return <li className="nav-item">Loading...</li>;
+    }
+
+    if (!user || !user.username || !user.role) {
+      console.log("🔑 No user logged in — showing login link");
+      return (
+        <li className="nav-item">
+          <Link className="nav-link" to="/login">Login</Link>
+        </li>
+      );
+    }
+
+    console.log(`👤 Logged in user: ${user.username} | Role: ${user.role}`);
+    return (
+      <>
+        {user.role === "admin" && (
+          <li className="nav-item">
+            <Link className="nav-link" to="/admin">Admin Dashboard</Link>
+          </li>
+        )}
+        <li className="nav-item">
+          <button className="btn btn-outline-light" onClick={logout}>
+            Logout ({user.username})
+          </button>
+        </li>
+      </>
+    );
+  };
 
   return (
     <>
-      {/* ✅ Navbar */}
+      {/* Navbar */}
       <nav className="navbar navbar-dark bg-dark">
         <div className="container d-flex justify-content-between align-items-center">
           <Link className="navbar-brand fw-bold" to="/">Baraka Homes</Link>
 
-          {/* ✅ Mobile Toggle Button */}
+          {/* Mobile Toggle Button */}
           <button
             className="btn btn-outline-light d-lg-none"
             onClick={() => setIsOpen(true)}
@@ -22,7 +61,7 @@ export default function Header() {
             ☰
           </button>
 
-          {/* ✅ Desktop Menu */}
+          {/* Desktop Menu */}
           <ul className="navbar-nav ms-auto d-none d-lg-flex flex-row gap-3 align-items-center">
             <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/products">Products</Link></li>
@@ -43,23 +82,19 @@ export default function Header() {
                 )}
               </Link>
             </li>
+            {/* Conditional Auth Links */}
+            {renderAuthLinks()}
           </ul>
         </div>
       </nav>
 
-      {/* ✅ Mobile Slide-in Menu */}
+      {/* Mobile Slide-in Menu */}
       <div
         className={`offcanvas-menu ${isOpen ? "open" : ""}`}
         onClick={() => setIsOpen(false)}
       >
-        <div
-          className="offcanvas-content"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            className="btn-close ms-auto mb-3"
-            onClick={() => setIsOpen(false)}
-          ></button>
+        <div className="offcanvas-content" onClick={(e) => e.stopPropagation()}>
+          <button className="btn-close ms-auto mb-3" onClick={() => setIsOpen(false)}></button>
           <ul className="navbar-nav gap-3">
             <li className="nav-item"><Link className="nav-link" to="/" onClick={() => setIsOpen(false)}>Home</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/products" onClick={() => setIsOpen(false)}>Products</Link></li>
@@ -68,28 +103,23 @@ export default function Header() {
             <li className="nav-item"><Link className="nav-link" to="/blog" onClick={() => setIsOpen(false)}>Blog</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/contact" onClick={() => setIsOpen(false)}>Contact</Link></li>
             <li className="nav-item">
-              <Link
-                className="btn btn-success position-relative"
-                to="/cart"
-                onClick={() => setIsOpen(false)}
-              >
+              <Link className="btn btn-success position-relative" to="/cart" onClick={() => setIsOpen(false)}>
                 Cart
                 {itemCount > 0 && (
-                  <span
-                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                    style={{ fontSize: "0.75rem" }}
-                  >
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: "0.75rem" }}>
                     {itemCount}
                   </span>
                 )}
               </Link>
             </li>
+            {/* Conditional Auth Links (mobile) */}
+            {renderAuthLinks()}
           </ul>
         </div>
       </div>
 
-      {/* ✅ Styles */}
-      <style >{`
+      {/* Styles */}
+      <style>{`
         .offcanvas-menu {
           position: fixed;
           top: 0;
@@ -118,5 +148,5 @@ export default function Header() {
         }
       `}</style>
     </>
-  )
+  );
 }
