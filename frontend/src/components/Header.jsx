@@ -15,36 +15,36 @@ export default function Header() {
   }, [user]);
 
   // ✅ helper function for nav links
-  const renderAuthLinks = () => {
-    if (loading) {
-      return <li className="nav-item">Loading...</li>;
-    }
+const renderAuthLinks = () => {
+  if (loading) {
+    return <li className="nav-item">Loading...</li>;
+  }
 
-    if (!user.role) {
-      console.log("🔑 No user logged in — showing login link");
-      return (
-        <li className="nav-item">
-          <Link className="nav-link" to="/login">Login</Link>
-        </li>
-      );
-    }
-
-    console.log(`👤 Logged in user: ${user.username} | Role: ${user.role}`);
+  if (!user) {  // ✅ first check if user exists
+    console.log("🔑 No user logged in — showing login link");
     return (
-      <>
-        {user.role === "admin" && (
-          <li className="nav-item">
-            <Link className="nav-link" to="/admin">Admin Dashboard</Link>
-          </li>
-        )}
-        <li className="nav-item">
-          <button className="btn btn-outline-light" onClick={logout}>
-            Logout ({user.username})
-          </button>
-        </li>
-      </>
+      <li className="nav-item">
+        <Link className="nav-link" to="/login">Login</Link>
+      </li>
     );
-  };
+  }
+
+  console.log(`👤 Logged in user: ${user.username} | Role: ${user.role}`);
+  return (
+    <>
+      {user.role === "admin" && (
+        <li className="nav-item">
+          <Link className="nav-link" to="/admin">Admin Dashboard</Link>
+        </li>
+      )}
+      <li className="nav-item">
+        <button className="btn btn-outline-light" onClick={logout}>
+          Logout ({user.username})
+        </button>
+      </li>
+    </>
+  );
+};
 
   return (
     <>
