@@ -71,7 +71,7 @@ style={{ height: "200px", objectFit: "cover" }}
     </div>
   )}
 
-  <style jsx>{`
+  <style>{`
     .reserve-toast {
       position: absolute;
       bottom: 10px;
