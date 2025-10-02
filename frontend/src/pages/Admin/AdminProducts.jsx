@@ -10,7 +10,7 @@ export default function AdminProducts() {
   const [images, setImages] = useState([])
 
   const fetchProducts = async () => {
-    const res = await API.get("/api/products")
+    const res = await API.get("/products")
     setProducts(res.data)
   }
 
@@ -26,7 +26,7 @@ export default function AdminProducts() {
     formData.append("description", description)
     images.forEach((img) => formData.append("images", img))
 
-    await API.post("/api/products", formData, {
+    await API.post("/products", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     })
 
@@ -39,7 +39,7 @@ export default function AdminProducts() {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this product?")) return
-    await API.delete(`/api/products/${id}`)
+    await API.delete(`/products/${id}`)
     setProducts(products.filter((p) => p._id !== id))
   }
 

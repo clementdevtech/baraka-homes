@@ -2,27 +2,27 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import API from "../../api"
 
-export default function ManageBlogs() {
-  const [blogs, setBlogs] = useState([])
+export default function ManageProducts() {
+  const [products, setProducts] = useState([])
 
-  const fetchBlogs = async () => {
+  const fetchProducts = async () => {
     try {
-      const res = await API.get("/api/blogs")
-      setBlogs(res.data)
+      const res = await API.get("/products")
+      setProducts(res.data)
     } catch (err) {
       console.error(err)
     }
   }
 
   useEffect(() => {
-    fetchBlogs()
+    fetchProducts()
   }, [])
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this blog?")) return
+    if (!window.confirm("Are you sure you want to delete this product?")) return
     try {
-      await API.delete(`/api/blogs/${id}`)
-      setBlogs(blogs.filter((b) => b._id !== id))
+      await API.delete(`/products/${id}`)
+      setProducts(products.filter((p) => p._id !== id))
     } catch (err) {
       console.error(err)
     }
@@ -30,34 +30,36 @@ export default function ManageBlogs() {
 
   return (
     <div>
-      <h2>Manage Blogs</h2>
-      <Link to="/admin/blogs/new" className="btn btn-primary mb-3">
-        + New Blog
+      <h2>Manage Products</h2>
+      <Link to="/admin/products/new" className="btn btn-primary mb-3">
+        + New Product
       </Link>
 
       <table className="table table-striped">
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Slug</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Location</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {blogs.map((b) => (
-            <tr key={b._id}>
-              <td>{b.title}</td>
-              <td>{b.slug}</td>
+          {products.map((p) => (
+            <tr key={p._id}>
+              <td>{p.name}</td>
+              <td>{p.price}</td>
+              <td>{p.location}</td>
               <td>
                 <Link
-                  to={`/admin/blogs/edit/${b.slug}`}
+                  to={`/admin/products/edit/${p._id}`}
                   className="btn btn-sm btn-warning me-2"
                 >
                   Edit
                 </Link>
                 <button
                   className="btn btn-sm btn-danger"
-                  onClick={() => handleDelete(b._id)}
+                  onClick={() => handleDelete(p._id)}
                 >
                   Delete
                 </button>

@@ -7,19 +7,19 @@ export default function AdminServices() {
   const [description, setDescription] = useState("")
 
   useEffect(() => {
-    API.get("/api/services").then((res) => setServices(res.data))
+    API.get("/services").then((res) => setServices(res.data))
   }, [])
 
   const handleAdd = async () => {
-    await API.post("/api/services", { name, description })
-    const res = await API.get("/api/services")
+    await API.post("/services", { name, description })
+    const res = await API.get("/services")
     setServices(res.data)
     setName("")
     setDescription("")
   }
 
   const handleDelete = async (id) => {
-    await API.delete(`/api/services/${id}`)
+    await API.delete(`/services/${id}`)
     setServices(services.filter((s) => s._id !== id))
   }
 

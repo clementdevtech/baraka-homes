@@ -1,6 +1,9 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+
+
 import dotenv from "dotenv";
 
 // Load environment variables
@@ -9,6 +12,7 @@ dotenv.config();
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 
 const app = express();
 
@@ -35,11 +39,12 @@ app.use(
 );
 
 app.use(express.json());
-
+app.use(cookieParser());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/blogs", blogRoutes);
+app.use("/api/contact", contactRoutes);
 
 // Root test route
 app.get("/", (req, res) => {

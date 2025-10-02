@@ -1,34 +1,37 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
+
+
 
 export const authMiddleware = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  //console.log("🔍 Incoming Authorization Header:", authHeader);
-
-  if (!authHeader) {
-    return res.status(401).json({ message: "No token provided" });
-  }
-
-  const token = authHeader.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ message: "Malformed token" });
-  }
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    //console.log("✅ JWT Decoded:", decoded);
+    // 1️⃣ Try Authorization header first
+    const authHeader = req.headers.authorization;
+    let token = authHeader?.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : null;
 
-    req.user = await User.findById(decoded.id).select("-password");
-    if (!req.user) {
-      console.warn("⚠️ Token valid but user not found in DB");
-      return res.status(401).json({ message: "Invalid token" });
+    // 2️⃣ Fallback to cookies
+    if (!token && req.cookies?.token) {
+      token = req.cookies.token;
     }
 
-    /*console.log("👤 Authenticated User:", {
-      id: req.user._id,
-      email: req.user.email,
-      role: req.user.role,
-    });*/
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    // 3️⃣ Verify
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // 4️⃣ Attach user
+    req.user = await User.findById(decoded.id).select("-password");
+    if (!req.user) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
 
     next();
   } catch (err) {
@@ -36,6 +39,9 @@ export const authMiddleware = async (req, res, next) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
 };
+
+
+
 
 export const adminMiddleware = (req, res, next) => {
   if (req.user?.role !== "admin") {

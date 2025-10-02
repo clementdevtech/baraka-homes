@@ -16,7 +16,7 @@ export default function AdminProductForm() {
     if (id) {
       const fetchProduct = async () => {
         try {
-          const res = await API.get(`/api/products/${id}`)
+          const res = await API.get(`/products/${id}`)
           setName(res.data.name)
           setPrice(res.data.price)
           setDescription(res.data.description)
@@ -40,11 +40,11 @@ export default function AdminProductForm() {
 
     try {
       if (id) {
-        await API.put(`/api/products/${id}`, formData, {
+        await API.put(`/products/${id}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
       } else {
-        await API.post("/api/products", formData, {
+        await API.post("/products", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
       }

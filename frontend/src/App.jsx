@@ -4,12 +4,12 @@ import {
   Routes,
   Route,
   useLocation,
-  Navigate,
 } from "react-router-dom"
 import { CSSTransition, TransitionGroup } from "react-transition-group"
 
 import Header from "./components/Header"
 import Footer from "./components/Footer"
+
 import Home from "./pages/Home"
 import Products from "./pages/Products"
 import Services from "./pages/Services"
@@ -20,26 +20,23 @@ import Contact from "./pages/Contact"
 import Cart from "./pages/Cart"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
+
+// ✅ Admin imports
 import AdminLayout from "./pages/Admin/AdminLayout"
 import AdminBlogForm from "./pages/Admin/AdminBlogForm"
-import AdminProducts from "./pages/Admin/AdminProducts"
 import AdminServices from "./pages/Admin/AdminServices"
 import AdminProductForm from "./pages/Admin/AdminProductForm"
+import ManageBlogs from "./pages/Admin/ManageBlogs"
+import ManageProducts from "./pages/Admin/ManageProducts"
+
 import ProtectedRoute from "./components/ProtectedRoute"
-import AuthProvider, { useAuth } from "./context/AuthContext"
+import AuthProvider from "./context/AuthContext"
 
 import "./App.css"
 
 function AnimatedRoutes() {
   const location = useLocation()
-  const { user } = useAuth()
-
-  // ✅ Fix for findDOMNode warning
   const nodeRef = React.useRef(null)
-
-  React.useEffect(() => {
-    console.log("📍 Navigated to:", location.pathname)
-  }, [location.pathname])
 
   return (
     <TransitionGroup component={null}>
@@ -48,10 +45,6 @@ function AnimatedRoutes() {
         classNames="page"
         timeout={500}
         nodeRef={nodeRef}
-        onEnter={() => console.log("▶️ Entering:", location.pathname)}
-        onEntered={() => console.log("✅ Entered:", location.pathname)}
-        onExit={() => console.log("⏹ Exiting:", location.pathname)}
-        onExited={() => console.log("❌ Exited:", location.pathname)}
       >
         <div ref={nodeRef}>
           <Routes location={location}>
@@ -67,18 +60,7 @@ function AnimatedRoutes() {
 
             {/* Auth pages */}
             <Route path="/login" element={<Login />} />
-            <Route
-              path="/register"
-              element={
-                !user ? (
-                  <Navigate to="/login" replace />
-                ) : user.role !== "admin" ? (
-                  <Navigate to="/" replace />
-                ) : (
-                  <Register />
-                )
-              }
-            />
+            <Route path="/register" element={<Register />} />
 
             {/* Admin Dashboard (protected) */}
             <Route
@@ -89,15 +71,20 @@ function AnimatedRoutes() {
                 </ProtectedRoute>
               }
             >
-              <Route path="blogs" element={<div>Manage Blogs</div>} />
+              {/* Blogs */}
+              <Route path="blogs" element={<ManageBlogs />} />
               <Route path="blogs/new" element={<AdminBlogForm />} />
               <Route path="blogs/edit/:slug" element={<AdminBlogForm />} />
 
-              <Route path="products" element={<AdminProducts />} />
-              <Route path="services" element={<AdminServices />} />
+              {/* Products */}
+              <Route path="products" element={<ManageProducts />} />
               <Route path="products/new" element={<AdminProductForm />} />
               <Route path="products/edit/:id" element={<AdminProductForm />} />
 
+              {/* Services */}
+              <Route path="services" element={<AdminServices />} />
+
+              {/* Catch-all */}
               <Route path="*" element={<div>Admin Page Not Found</div>} />
             </Route>
           </Routes>

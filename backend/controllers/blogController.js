@@ -16,14 +16,44 @@ export const getBlogs = async (req, res) => {
 
 export const getBlog = async (req, res) => {
   try {
-    const blog = await Blog.findOne({ slug: req.params.slug }).populate(
-      "author",
-      "username email"
-    );
-    if (!blog) return res.status(404).json({ message: "Not found" });
-    res.json(blog);
+    const { slug } = req.params;
+    const blog = await Blog.findOne({ slug })
+      .populate("author", "username")
+      .populate("comments.user", "username")
+      .populate("comments.replies.user", "username");
+
+    if (!blog) return res.status(404).json({ error: "Blog not found" });
+
+    const userId = req.user ? req.user._id.toString() : null;
+
+    // Counts
+    const reactions = {
+      likes: blog.reactions.likes.length,
+      hearts: blog.reactions.hearts.length,
+      dislikes: blog.reactions.dislikes.length,
+    };
+
+    // User's current reaction
+    const userReactions = {
+      like: userId
+        ? blog.reactions.likes.some(id => id.toString() === userId)
+        : false,
+      heart: userId
+        ? blog.reactions.hearts.some(id => id.toString() === userId)
+        : false,
+      dislike: userId
+        ? blog.reactions.dislikes.some(id => id.toString() === userId)
+        : false,
+    };
+
+    res.json({
+      ...blog.toObject(),
+      reactions,
+      userReactions,
+    });
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Error fetching blog:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
@@ -59,8 +89,27 @@ export const addBlog = async (req, res) => {
     });
 
     await blog.save();
-    res.status(201).json(blog);
+
+    // Build reaction counts + userReactions (initially empty)
+    const reactions = {
+      likes: 0,
+      hearts: 0,
+      dislikes: 0,
+    };
+
+    const userReactions = {
+      like: false,
+      heart: false,
+      dislike: false,
+    };
+
+    res.status(201).json({
+      ...blog.toObject(),
+      reactions,
+      userReactions,
+    });
   } catch (err) {
+    console.error("Error adding blog:", err);
     res.status(400).json({ message: "Invalid data", error: err.message });
   }
 };
@@ -148,26 +197,35 @@ export const addReply = async (req, res) => {
 
 // ------------------ Reactions ------------------
 export const toggleReaction = async (req, res) => {
-  try {
-    const { type } = req.body; // "likes" | "dislikes" | "hearts"
-    const blog = await Blog.findOne({ slug: req.params.slug });
-    if (!blog) return res.status(404).json({ message: "Not found" });
+  const { slug } = req.params;
+  const { type } = req.body; // "like" | "heart" | "dislike"
+  const userId = req.user._id;
 
-    const reactions = blog.reactions[type];
-    if (!reactions) return res.status(400).json({ message: "Invalid reaction type" });
+  const blog = await Blog.findOne({ slug });
+  if (!blog) return res.status(404).json({ error: "Blog not found" });
 
-    const userId = req.user._id;
-    const index = reactions.indexOf(userId);
+  // Remove user from all reaction arrays first
+  blog.reactions.likes = blog.reactions.likes.filter(id => id.toString() !== userId.toString());
+  blog.reactions.hearts = blog.reactions.hearts.filter(id => id.toString() !== userId.toString());
+  blog.reactions.dislikes = blog.reactions.dislikes.filter(id => id.toString() !== userId.toString());
 
-    if (index === -1) {
-      reactions.push(userId); // add
-    } else {
-      reactions.splice(index, 1); // remove
-    }
+  // Add to the selected type
+  if (type === "like") blog.reactions.likes.push(userId);
+  if (type === "heart") blog.reactions.hearts.push(userId);
+  if (type === "dislike") blog.reactions.dislikes.push(userId);
 
-    await blog.save();
-    res.json(blog);
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
-  }
+  await blog.save();
+
+  res.json({
+    reactions: {
+      likes: blog.reactions.likes.length,
+      hearts: blog.reactions.hearts.length,
+      dislikes: blog.reactions.dislikes.length,
+    },
+    userReactions: {
+      like: blog.reactions.likes.some(id => id.toString() === userId.toString()),
+      heart: blog.reactions.hearts.some(id => id.toString() === userId.toString()),
+      dislike: blog.reactions.dislikes.some(id => id.toString() === userId.toString()),
+    },
+  });
 };
